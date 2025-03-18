@@ -17,6 +17,10 @@ This project implements an automated data pipeline that fetches weather data, pr
 - dbt
 - Access to weather API (configured in environment variables)
 
+## Setup
+ 1. Install Docker and Docker Compose
+ 2. 
+
 ## Project Structure
 - #### DAGs
 

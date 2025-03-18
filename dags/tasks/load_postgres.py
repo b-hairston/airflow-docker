@@ -3,6 +3,7 @@ import os
 import dask.dataframe as dd
 import pandas as pd
 import psycopg2
+import json
 from dotenv import load_dotenv
 from psycopg2 import sql
 from airflow.decorators import task
@@ -10,28 +11,30 @@ from airflow.decorators import task
 load_dotenv(override=True)
 
 
-@task
-def load_data_to_postgres(weather_data: list, **kwargs):
+def load_data_to_postgres(**kwargs):
     """Load weather data into PostgreSQL."""
-    # Create DataFrame from weather data
-    df = pd.DataFrame(weather_data)
-    dask_df = dd.from_pandas(df, npartitions=1)
+    
+    print(kwargs)
+    ti = kwargs["ti"]
 
-    # Get database credentials from environment variables
+    json_data = ti.xcom_pull(task_ids="fetch_weather", key="weather_data")
+    weather_df = pd.read_json(json_data)
+    dask_df = dd.from_pandas(weather_df, npartitions=1)
+
     db_username = os.getenv("DB_USER")
     db_password = os.getenv("DB_PASSWORD")
     db_host = os.getenv("DB_HOST")
     db_port = os.getenv("DB_PORT")
     db_name = os.getenv("DB_NAME")
 
-    cursor = None  # Initialize cursor
-    conn = None    # Initialize connection
+    cursor = None  
+    conn = None    
 
     try:
-        # Connect to PostgreSQL server (default database)
+        
         conn = psycopg2.connect(
             host=db_host,
-            database="postgres",  # Connect to the default database to create the new one
+            database="postgres", 
             user=db_username,
             password=db_password
         )
@@ -45,7 +48,7 @@ def load_data_to_postgres(weather_data: list, **kwargs):
         )
         cursor = conn.cursor()  
         
-        # Create table if it does not exist
+        
         table_statement = """
         CREATE TABLE IF NOT EXISTS weather_data (
             id SERIAL PRIMARY KEY,
@@ -57,12 +60,11 @@ def load_data_to_postgres(weather_data: list, **kwargs):
         );
         """
         cursor.execute(table_statement)
-        conn.commit()  # Commit the table creation
+        conn.commit() 
 
-        # Insert data into the weather_data table
+        
         for partition in dask_df.to_delayed():
             records = partition.compute().to_dict(orient='records')  
-            # Using `executemany` for batch inserts can be more efficient
             insert_query = """
                 INSERT INTO weather_data (observed_at, temperature, apparent_temperature, wind_speed, visibility)
                 VALUES (%s, %s, %s, %s, %s);
@@ -77,9 +79,9 @@ def load_data_to_postgres(weather_data: list, **kwargs):
     except Exception as e:
         print(f"Error: {e}")
     finally:
-        if cursor:  # Check if cursor was created before trying to close it
+        if cursor:  
             cursor.close()
-        if conn:  # Check if connection was created before trying to close it
+        if conn:  
             conn.close()
     
 

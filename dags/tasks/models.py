@@ -39,7 +39,6 @@ def validate_data(df: pd.DataFrame, model: BaseModel) -> Dict[int, List[str]]:
     
     for index, row in df.iterrows():
         try:
-            # Create an instance of the Pydantic model
             model(**row.to_dict())
         except ValidationError as e:
             print(f"Validation error for row {index}: {e}")

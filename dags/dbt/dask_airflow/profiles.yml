@@ -1,0 +1,12 @@
+dask_airflow:
+  outputs:
+    dev:
+      dbname: postgres
+      host: localhost
+      pass: postgres
+      port: 5433
+      schema: dbt_models
+      threads: 1
+      type: postgres
+      user: postgres_user
+  target: dev

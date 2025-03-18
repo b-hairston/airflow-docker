@@ -6,4 +6,4 @@ SELECT
     wind_speed_10m,
     visibility
 FROM 
-    {{ ref('weather_data') }}
+    weather_data

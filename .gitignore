@@ -1,3 +1,7 @@
 /.env
 /logs
 /dbt/logs
+/dags/dbt/target
+/dags/__pycache__
+/dags/tasks/__pycache__
+/dags/dbt/logs
