@@ -1,0 +1,11 @@
+dbt-postgres
+dbt-core
+httpx
+apache-airflow==2.10.5
+pandas
+dask==2025.2.0
+psycopg2-binary
+pydantic==2.10.6
+python-dotenv
+pyarrow
+duckdb
