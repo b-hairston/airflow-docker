@@ -1,11 +1,11 @@
-dask_airflow:
+fuckin_dbt:
   outputs:
     dev:
       dbname: postgres
-      host: localhost
+      host: airflow-docker-analytics-db-1
       pass: postgres
-      port: 5433
-      schema: dbt_models
+      port: 5432
+      schema: public
       threads: 1
       type: postgres
       user: postgres_user
