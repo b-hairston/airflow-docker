@@ -5,3 +5,5 @@
 /dags/__pycache__
 /dags/tasks/__pycache__
 /dags/dbt/logs
+/dags/dbt/fuckin_dbt/target
+/dags/dbt/fuckin_dbt/logs
